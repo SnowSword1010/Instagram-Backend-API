@@ -5,7 +5,9 @@ This API is solely created as part of the task given by Appointy for internship 
 The endpoints of this API are mentioned below:
 
 ## **/users**
+
 <!-- OL -->
+
 1. Displays/Creates a user
 2. Request type: GET, POST
 3. GET Parameters: uid (begins with 1)
@@ -13,17 +15,24 @@ The endpoints of this API are mentioned below:
 5. Password isn't stored directly ; it is hashed using sh1 and sha256 algorithms
 
 ## **/posts**
+
 <!-- OL -->
+
 1. Displays/Creates a post
 2. Request type: GET, POST
 3. GET Parameters: pid (begins with 1)
 4. POST Parameters: Email, Caption, Image_URL, Posted_Timestamp
 
 ## **/posts/users**
+
 <!-- OL -->
+
 1. Displays a set number of posts (5) of a particular user
-2. Exploites *pagination* in order to achieve this
-2. Request type: GET
-3. GET Parameters: uid (begins with 1), page (begins with 0)
-4. page denotes the page number that the visitors wants to navigate to
-5. A slice denoting containing user's post ids is present in the user schema which makes this query extremely efficient
+2. Exploites _pagination_ in order to achieve this
+3. Request type: GET
+4. GET Parameters: uid (begins with 1), page (begins with 0)
+5. page denotes the page number that the visitors wants to navigate to
+6. A slice denoting containing user's post ids is present in the user schema which makes this query extremely efficient
+
+## **Custome Test Cases PDF**
+https://bit.ly/3BGX1U1
