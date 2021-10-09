@@ -4,31 +4,33 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func postsEndPoint(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("content-type", "application/json")
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	client, err := mongo.Connect(context.TODO(), clientOptions)
+	if err != nil {
+		fmt.Println("Mongo.connect() error ", err)
+		// write code to exit
+	}
+	// setting timeout for request
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	collection := client.Database("Instagram-Backend-API").Collection("posts")
+	collection2 := client.Database("Instagram-Backend-API").Collection("users")
 	if r.Method == "POST" {
 
-		clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
-		client, err := mongo.Connect(context.TODO(), clientOptions)
-		if err != nil {
-			fmt.Println("Mongo.connect() error ", err)
-			// write code to exit
-		}
 		// processing raw request query
 		r.ParseForm()
-
-		// setting timeout for request
-		ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-		collection := client.Database("Instagram-Backend-API").Collection("posts")
-		collection2 := client.Database("Instagram-Backend-API").Collection("users")
 
 		var result bson.M
 		var result2 bson.M
@@ -53,6 +55,25 @@ func postsEndPoint(w http.ResponseWriter, r *http.Request) {
 		collection.InsertOne(ctx, post)
 
 		json.NewEncoder(w).Encode(result)
+		return
+	} else if r.Method == "GET" {
+		pids, ok := r.URL.Query()["pid"]
+
+		if !ok || len(pids[0]) < 1 {
+			log.Println("Url Param 'uid' is missing")
+			return
+		}
+		pid, _ := strconv.ParseInt(pids[0], 0, 64)
+		fmt.Println(pid)
+		JSONData := struct {
+			Post_id          uint64 `bson:"Post_id"`
+			Caption          string `bson:"Caption"`
+			Image_URL        string `bson:"Image_URL"`
+			Posted_Timestamp string `bson:"Posted_Timestamp"`
+		}{}
+		collection.FindOne(context.TODO(), bson.D{primitive.E{Key: "Post_id", Value: pid}}).Decode(&JSONData)
+		fmt.Println(JSONData)
+		json.NewEncoder(w).Encode(JSONData)
 		return
 	} else {
 		json.NewEncoder(w).Encode("Kindly make post requests on this URL to create new users.")
