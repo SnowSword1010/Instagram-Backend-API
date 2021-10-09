@@ -68,7 +68,13 @@ func userPostEndPoint(w http.ResponseWriter, r *http.Request) {
 			Posted_Timestamp string `bson:"Posted_Timestamp"`
 		}{}
 
-		for _, element := range mySlice {
+		if endindx > int64(cap(mySlice)) {
+			endindx = int64(cap(mySlice))
+		}
+
+		for index := startindx; index < endindx; index++ {
+			element := mySlice[index]
+			fmt.Println(element)
 			fmt.Println(element)
 			collection.FindOne(context.TODO(), bson.D{primitive.E{Key: "Post_id", Value: element}}).Decode(&JSONPost)
 			json.NewEncoder(w).Encode(JSONPost)

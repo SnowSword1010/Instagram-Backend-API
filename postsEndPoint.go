@@ -56,7 +56,6 @@ func postsEndPoint(w http.ResponseWriter, r *http.Request) {
 
 		var JSON struct {
 			_id       primitive.ObjectID `bson:"_id"`
-			UserId    uint64             `bson:"User_id"`
 			Name      string             `bson:"Name"`
 			Email     string             `bson:"Email"`
 			Password  string             `bson:"Password"`
