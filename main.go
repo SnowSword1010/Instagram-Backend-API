@@ -15,6 +15,7 @@ type User struct {
 	Name     string             `json:"Name" bson:"Name"`
 	Email    string             `json:"Email" bson:"Email"`
 	Password string             `json:"Password" bson:"Password"`
+	PostID   []uint64           `json:"PostID" bson:"PostID"`
 }
 
 type Posts struct {
