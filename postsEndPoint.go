@@ -50,23 +50,6 @@ func postsEndPoint(w http.ResponseWriter, r *http.Request) {
 		post.Posted_Timestamp = r.Form["Posted_Timestamp"][0]
 		ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
 
-		// fmt.Println(reflect.TypeOf(result2["_id"]))
-
-		// ans, e := collection2.UpdateOne(
-		// 	ctx,
-		// 	bson.M{"_id": result2["_id"]},
-		// 	bson.D{
-		// 		{"$set", bson.D{{"PostID", [post.postID]}}},
-		// 	},
-		// )
-		// if e != nil {
-		// 	log.Fatal(e)
-		// }
-
-		// fmt.Printf("Updated %v Documents!\n", ans.ModifiedCount)
-
-		//updateId, _ := primitive.ObjectIDFromHex(result2["_id"])
-
 		collection.InsertOne(ctx, post)
 
 		json.NewEncoder(w).Encode(result)

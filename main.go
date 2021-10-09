@@ -15,11 +15,10 @@ type User struct {
 	Name     string             `json:"Name" bson:"Name"`
 	Email    string             `json:"Email" bson:"Email"`
 	Password string             `json:"Password" bson:"Password"`
-	PostID   []uint64           `json:"PostID" bson:"PostID"`
 }
 
 type Posts struct {
-	id               primitive.ObjectID `json:"_id" bson:"_id"`
+	_id              primitive.ObjectID `json:"_id" bson:"_id"`
 	Email            string             `json:"Email" bson:"Email"`
 	PostId           uint64             `json:"Post_id" bson:"Post_id"`
 	Caption          string             `json:"Caption" bson:"Caption"`

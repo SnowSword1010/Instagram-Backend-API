@@ -42,8 +42,6 @@ func usersEndpoint(w http.ResponseWriter, r *http.Request) {
 				user.Email = r.Form["Email"][0]
 				// ENCRYPTING AND STORING PASSWORD
 				user.Password = givePwdHash(r.Form["Password"][0])
-				myslice := make([]uint64, 0)
-				user.PostID = myslice
 				ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
 
 				//this code sends identification key as response
