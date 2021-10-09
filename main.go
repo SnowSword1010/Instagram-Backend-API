@@ -10,11 +10,12 @@ import (
 )
 
 type User struct {
-	_id      primitive.ObjectID `json:"_id" bson:"_id"`
-	UserId   uint64             `json:"User_id" bson:"User_id"`
-	Name     string             `json:"Name" bson:"Name"`
-	Email    string             `json:"Email" bson:"Email"`
-	Password string             `json:"Password" bson:"Password"`
+	_id       primitive.ObjectID `json:"_id" bson:"_id"`
+	UserId    uint64             `json:"User_id" bson:"User_id"`
+	Name      string             `json:"Name" bson:"Name"`
+	Email     string             `json:"Email" bson:"Email"`
+	Password  string             `json:"Password" bson:"Password"`
+	PostSlice []uint64           `json:"PostSlice" bson:"PostSlice"`
 }
 
 type Posts struct {
@@ -35,6 +36,7 @@ func main() {
 	fmt.Println("Starting the server at port 8080")
 	http.HandleFunc("/users", usersEndpoint)
 	http.HandleFunc("/posts", postsEndPoint)
+	http.HandleFunc("/posts/users", userPostEndPoint)
 	http.HandleFunc("/", homePage)
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }

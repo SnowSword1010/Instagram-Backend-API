@@ -54,6 +54,27 @@ func postsEndPoint(w http.ResponseWriter, r *http.Request) {
 
 		collection.InsertOne(ctx, post)
 
+		var JSON struct {
+			_id       primitive.ObjectID `bson:"_id"`
+			UserId    uint64             `bson:"User_id"`
+			Name      string             `bson:"Name"`
+			Email     string             `bson:"Email"`
+			Password  string             `bson:"Password"`
+			PostSlice []uint64           `bson:"PostSlice"`
+		}
+		fmt.Println(collection2.FindOne(context.TODO(), bson.D{{"Email", r.Form["Email"][0]}}).Decode(&JSON))
+		// append(JSON.PostSlice, post.PostId)
+
+		JSON.PostSlice = append(JSON.PostSlice, post.PostId)
+
+		updateResult, _ := collection2.UpdateOne(
+			ctx,
+			bson.D{{"Email", r.Form["Email"][0]}},
+			bson.D{
+				{"$set", bson.D{primitive.E{Key: "PostSlice", Value: JSON.PostSlice}}}},
+		)
+
+		fmt.Printf("%v", updateResult.ModifiedCount)
 		json.NewEncoder(w).Encode(result)
 		return
 	} else if r.Method == "GET" {
@@ -74,6 +95,7 @@ func postsEndPoint(w http.ResponseWriter, r *http.Request) {
 		collection.FindOne(context.TODO(), bson.D{primitive.E{Key: "Post_id", Value: pid}}).Decode(&JSONData)
 		fmt.Println(JSONData)
 		json.NewEncoder(w).Encode(JSONData)
+
 		return
 	} else {
 		json.NewEncoder(w).Encode("Kindly make post requests on this URL to create new users.")

@@ -40,6 +40,8 @@ func usersEndpoint(w http.ResponseWriter, r *http.Request) {
 				user.UserId = uint64(itemCount + 1)
 				user.Name = r.Form["Name"][0]
 				user.Email = r.Form["Email"][0]
+				myslice := make([]uint64, 0)
+				user.PostSlice = myslice
 				// ENCRYPTING AND STORING PASSWORD
 				user.Password = givePwdHash(r.Form["Password"][0])
 				ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
