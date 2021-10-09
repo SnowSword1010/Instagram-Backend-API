@@ -32,6 +32,10 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to Instagram Backend API | Appointy Task")
 }
 
+func computeHash() {
+
+}
+
 func usersEndpoint(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
@@ -54,12 +58,12 @@ func usersEndpoint(w http.ResponseWriter, r *http.Request) {
 				var user User
 				user.Name = r.Form["Name"][0]
 				user.Email = r.Form["Email"][0]
-				// PASSWORD NOT STORED IN SECURE FORM YET
-				user.Password = r.Form["Password"][0]
+				// ENCRYPTING AND STORING PASSWORD
+				user.Password = givePwdHash(r.Form["Password"][0])
 				ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
+
 				//this code sends identification key as response
 				result, _ := collection.InsertOne(ctx, user)
-
 				json.NewEncoder(w).Encode(result)
 				return
 			}
