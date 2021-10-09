@@ -16,22 +16,26 @@ import (
 )
 
 func postsEndPoint(w http.ResponseWriter, r *http.Request) {
+	// SETTING HEADERS ON RESPONSE
 	w.Header().Add("content-type", "application/json")
+
+	// ESTABLISHING CONNECTION WITH DATABASE
 	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		fmt.Println("Mongo.connect() error ", err)
-		// write code to exit
 	}
-	// setting timeout for request
+
+	// MAKES CONCURRENCY A TAD BETTER
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
 	collection := client.Database("Instagram-Backend-API").Collection("posts")
 	collection2 := client.Database("Instagram-Backend-API").Collection("users")
-	if r.Method == "POST" {
 
+	// HANDLING POST REQUESTS
+	if r.Method == "POST" {
 		// processing raw request query
 		r.ParseForm()
-
 		var result bson.M
 		var result2 bson.M
 		found := collection2.FindOne(context.TODO(), bson.D{{"Email", r.Form["Email"][0]}}).Decode(&result2)
@@ -61,11 +65,11 @@ func postsEndPoint(w http.ResponseWriter, r *http.Request) {
 			Password  string             `bson:"Password"`
 			PostSlice []uint64           `bson:"PostSlice"`
 		}
-		fmt.Println(collection2.FindOne(context.TODO(), bson.D{{"Email", r.Form["Email"][0]}}).Decode(&JSON))
-		// append(JSON.PostSlice, post.PostId)
 
+		// MODIFYING THE PostSlice slice in User Database to keep a track of their posts
 		JSON.PostSlice = append(JSON.PostSlice, post.PostId)
 
+		// UPDATING THE USER RECORD
 		updateResult, _ := collection2.UpdateOne(
 			ctx,
 			bson.D{{"Email", r.Form["Email"][0]}},
@@ -83,6 +87,7 @@ func postsEndPoint(w http.ResponseWriter, r *http.Request) {
 			log.Println("Url Param 'uid' is missing")
 			return
 		}
+		// converting string to uint64
 		pid, _ := strconv.ParseInt(pids[0], 0, 64)
 		fmt.Println(pid)
 		JSONData := struct {
@@ -97,6 +102,7 @@ func postsEndPoint(w http.ResponseWriter, r *http.Request) {
 
 		return
 	} else {
-		json.NewEncoder(w).Encode("Kindly make post requests on this URL to create new users.")
+		// caution message for bad requests
+		json.NewEncoder(w).Encode("Kindly make post requests on this URL to create new users or get request to display existing users.")
 	}
 }

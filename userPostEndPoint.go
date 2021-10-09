@@ -15,17 +15,21 @@ import (
 )
 
 func userPostEndPoint(w http.ResponseWriter, r *http.Request) {
+	// SETTING HEADERS ON RESPONSE
 	w.Header().Add("content-type", "application/json")
+
+	//ESTABLISHING CONNECTION WITH DATABASE
 	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		fmt.Println("Mongo.connect() error ", err)
-		// write code to exit
 	}
-	// setting timeout for request
-	//ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
+	// DEFINING COLLECTIONS ; collection - posts database ; collection2 - users database
 	collection := client.Database("Instagram-Backend-API").Collection("posts")
 	collection2 := client.Database("Instagram-Backend-API").Collection("users")
+
+	// HANDLING GET REQUESTS
 	if r.Method == "GET" {
 		uids, ok := r.URL.Query()["uid"]
 
@@ -45,6 +49,8 @@ func userPostEndPoint(w http.ResponseWriter, r *http.Request) {
 		}
 
 		page, _ := strconv.ParseInt(pages[0], 0, 64)
+
+		// ALGORITHM TO IMPLEMENT PAGINATION
 		var startindx, endindx int64 = page * 5, page*5 + 5
 
 		if startindx <= -1 || endindx <= -1 {
@@ -68,10 +74,12 @@ func userPostEndPoint(w http.ResponseWriter, r *http.Request) {
 			Posted_Timestamp string `bson:"Posted_Timestamp"`
 		}{}
 
+		// VITAL CHECK TO PREVENT SOCKET CRASH
 		if endindx > int64(cap(mySlice)) {
 			endindx = int64(cap(mySlice))
 		}
 
+		// DISPLAYING JSON RESPONSES OF RELEVANT POSTS
 		for index := startindx; index < endindx; index++ {
 			element := mySlice[index]
 			fmt.Println(element)
@@ -79,7 +87,8 @@ func userPostEndPoint(w http.ResponseWriter, r *http.Request) {
 			collection.FindOne(context.TODO(), bson.D{primitive.E{Key: "Post_id", Value: element}}).Decode(&JSONPost)
 			json.NewEncoder(w).Encode(JSONPost)
 		}
-
-		// json.NewEncoder(w).Encode("Kindly make post requests on this URL to create new users.")
+	} else {
+		// CAUTION MESSAGE FOR WRONG REQUEST TYPES
+		json.NewEncoder(w).Encode("Kindly use only GET requests on this route")
 	}
 }

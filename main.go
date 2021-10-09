@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// USER SCHEMA
 type User struct {
 	_id       primitive.ObjectID `json:"_id" bson:"_id"`
 	UserId    uint64             `json:"User_id" bson:"User_id"`
@@ -18,6 +19,7 @@ type User struct {
 	PostSlice []uint64           `json:"PostSlice" bson:"PostSlice"`
 }
 
+// POST SCHEMA
 type Posts struct {
 	_id              primitive.ObjectID `json:"_id" bson:"_id"`
 	Email            string             `json:"Email" bson:"Email"`
@@ -27,6 +29,7 @@ type Posts struct {
 	Posted_Timestamp string             `json:"Posted_Timestamp" bson:"Posted_Timestamp"`
 }
 
+// HANDLES REQUESTS MADE TO HOME ROUTE '/'
 func homePage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("content-type", "application/json")
 	json.NewEncoder(w).Encode("Welcome to Instagram Backend API | Appointy Task")

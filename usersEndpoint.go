@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"reflect"
 	"strconv"
 	"time"
 
@@ -17,18 +16,24 @@ import (
 )
 
 func usersEndpoint(w http.ResponseWriter, r *http.Request) {
+	// SETTING HEADERS ON RESPONSE
 	w.Header().Add("content-type", "application/json")
+
+	// ESTABLISHING CONNECTION WITH DATABASE
 	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		fmt.Println("Mongo.connect() error ", err)
-		// write code to exit
 	}
-	// setting timeout for request
+
+	// MAKES CONCURRENCY A TAD BETTER
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
 	collection := client.Database("Instagram-Backend-API").Collection("users")
+
+	// HANDLING POST REQUESTS
 	if r.Method == "POST" {
-		// processing raw request query
+		// PROCESSING RAW QUERY
 		r.ParseForm()
 		var result bson.M
 		found := collection.FindOne(context.TODO(), bson.D{{"Email", r.Form["Email"][0]}}).Decode(&result)
@@ -46,7 +51,7 @@ func usersEndpoint(w http.ResponseWriter, r *http.Request) {
 				user.Password = givePwdHash(r.Form["Password"][0])
 				ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
 
-				//this code sends identification key as response
+				// sends identification key as response
 				result, _ := collection.InsertOne(ctx, user)
 				json.NewEncoder(w).Encode(result)
 				return
@@ -63,7 +68,6 @@ func usersEndpoint(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		uid, _ := strconv.ParseInt(uids[0], 0, 64)
-		fmt.Println(reflect.TypeOf(uid))
 		JSONData := struct {
 			UserId uint64 `bson:"User_id"`
 			Name   string `bson:"Name"`
